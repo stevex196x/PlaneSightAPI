@@ -10,7 +10,6 @@ app = Flask(__name__)
 def hello_world():
     return 'Hello World!'
 
-
 """
  Query Parameters:
   lat
@@ -26,7 +25,7 @@ def get_weather():
         data = json.loads(r.text)
         temp = data['main']['temp']
         city = data['name']
-        return temp, city
+        return jsonify(temp, city)
     except:
         raise Exception("Unable to get current weather information")
 
