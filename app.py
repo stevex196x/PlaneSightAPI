@@ -20,7 +20,7 @@ def hello_world():
 @app.route('/weather')
 def get_weather():
     try:
-        arg_dict = jsonify(request.args.lists())
+        arg_dict = request.args
         r = requests.get('api.openweathermap.org/data/2.5/weather?lat=' + arg_dict['lat'] + '&lon=' +
                          arg_dict['lon'] + '&APPID=' + config.weather_api_key)
         data = json.loads(r.text)
@@ -40,7 +40,7 @@ def get_weather():
 @app.route('/fact')
 def get_landmark():
     try:
-        arg_dict = jsonify(request.args.lists())
+        arg_dict = request.args
         r = requests.get(
             'https://reverse.geocoder.api.here.com/6.2/reversegeocode.json?app_id=' + config.landmark_app_id +
             '&app_code=-' + config.landmark_app_code +
@@ -56,6 +56,18 @@ def get_landmark():
 
     return jsonify(li)
 
+@app.route('/wiki')
+def get_wiki():
+    try:
+        arg_dict = request.args
+        r = requests.get('https://en.wikipedia.org/w/api.php?format=json&action=query&prop=extracts&exintro&explaintext&redirects=1&titles=' + arg_dict['title'])
+        data = json.loads(r.text)
+        page_id = next(iter(data['query']['pages']))
+        return data['query']['pages'][page_id]['extract']
+    except:
+        raise Exception("Unable to fetch wiki page")
+
+
 
 """
 Query Paramaters:
@@ -67,7 +79,7 @@ Query Paramaters:
 @app.route('/info')
 def get_flight_info():
     try:
-        arg_dict = jsonify(request.args.lists())
+        arg_dict = request.args
         r = requests.get('http://aviation-edge.com/v2/public/flights?key=' + config.flight_key + '&depIata=' +
                          arg_dict['departCode'] + '&arrIata=' + arg_dict['arriveCode'] + '&flightNum=' +
                          arg_dict['flightNum'] + '&airlineIata=' + arg_dict['flightCode'] + '&limit=1')
